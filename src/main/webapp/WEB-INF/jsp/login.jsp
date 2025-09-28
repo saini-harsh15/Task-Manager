@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,6 +42,8 @@
         }
     </script>
 </head>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <body class="awesome-bg flex items-center justify-center min-h-screen p-4 transition-all duration-700">
 
 <!-- Login Card Container - Enhanced shadows, lift, and border -->
@@ -112,5 +115,30 @@
         </a>
     </div>
 </div>
+
+<!-- SweetAlert triggers -->
+<c:if test="${not empty error}">
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Login failed',
+            text: '${fn:escapeXml(error)}',
+            confirmButtonColor: '#4F46E5'
+        });
+    </script>
+</c:if>
+<c:if test="${logoutSuccess}">
+    <script>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'You have been logged out successfully',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+        });
+    </script>
+</c:if>
 </body>
 </html>

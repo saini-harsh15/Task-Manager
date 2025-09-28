@@ -40,6 +40,8 @@
             }
         }
     </script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="awesome-bg min-h-screen">
 
@@ -190,8 +192,7 @@
                                                     <i class="fas fa-pencil-alt"></i> Edit
                                                 </a>
 
-                                                <form action="<c:url value='/tasks/${t.id}/delete'/>" method="post" class="inline"
-                                                      onsubmit="return confirm('Are you sure you want to delete the task: ${t.title}?');">
+                                                <form action="<c:url value='/tasks/${t.id}/delete'/>" method="post" class="inline delete-form" data-title="${t.title}">
                                                     <button type="submit"
                                                             class="inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-150 transform hover:scale-[1.05] active:scale-[0.98]"
                                                     >
@@ -279,6 +280,87 @@
             th.addEventListener('click', function(){ sortBy(this.getAttribute('data-sort')); });
         });
     })();
+</script>
+<script>
+    // SweetAlert2 success toasts based on flash attributes
+</script>
+<c:if test="${loginSuccess}">
+    <script>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Welcome back, ${username}!',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+        });
+    </script>
+</c:if>
+<c:if test="${taskAdded}">
+    <script>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Task added successfully',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+        });
+    </script>
+</c:if>
+<c:if test="${taskUpdated}">
+    <script>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Task updated successfully',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+        });
+    </script>
+</c:if>
+<c:if test="${taskDeleted}">
+    <script>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: 'Task deleted successfully',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+        });
+    </script>
+</c:if>
+<script>
+    // SweetAlert2 delete confirmation for forms
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteForms = document.querySelectorAll('form.delete-form');
+        deleteForms.forEach(function(form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const title = form.getAttribute('data-title') || 'this task';
+                Swal.fire({
+                    title: 'Delete task?',
+                    text: `Are you sure you want to delete: ${title}?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
 </script>
 </body>
 </html>

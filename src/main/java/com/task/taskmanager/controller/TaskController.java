@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +46,8 @@ public class TaskController {
                              @RequestParam(value = "status", required = false) String status,
                              @RequestParam(value = "priority", required = false) String priority,
                              HttpSession session,
-                             Model model) {
+                             Model model,
+                             RedirectAttributes redirectAttributes) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
             return "redirect:/login";
@@ -73,6 +75,7 @@ public class TaskController {
         task.setPriority(safePriority);
         task.setUser(user);
         taskRepository.save(task);
+        redirectAttributes.addFlashAttribute("taskAdded", true);
         return "redirect:/dashboard";
     }
 
@@ -98,7 +101,8 @@ public class TaskController {
                              @RequestParam(value = "description", required = false) String description,
                              @RequestParam("status") String status,
                              @RequestParam(value = "priority", required = false) String priority,
-                             HttpSession session) {
+                             HttpSession session,
+                             RedirectAttributes redirectAttributes) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
             return "redirect:/login";
@@ -118,6 +122,7 @@ public class TaskController {
                 }
                 t.setPriority(safePriority);
                 taskRepository.save(t);
+                redirectAttributes.addFlashAttribute("taskUpdated", true);
             }
         }
         return "redirect:/dashboard";
@@ -125,7 +130,7 @@ public class TaskController {
 
     // DELETE
     @PostMapping("/tasks/{id}/delete")
-    public String deleteTask(@PathVariable("id") Long id, HttpSession session) {
+    public String deleteTask(@PathVariable("id") Long id, HttpSession session, RedirectAttributes redirectAttributes) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
             return "redirect:/login";
@@ -135,6 +140,7 @@ public class TaskController {
             Task t = opt.get();
             if (t.getUser() != null && t.getUser().getId().equals(userId)) {
                 taskRepository.deleteById(id);
+                redirectAttributes.addFlashAttribute("taskDeleted", true);
             }
         }
         return "redirect:/dashboard";
