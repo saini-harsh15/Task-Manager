@@ -1,6 +1,7 @@
 package com.task.taskmanager.entity;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tasks")
@@ -18,6 +19,12 @@ public class Task {
 
     // Priority can be HIGH, MEDIUM, or LOW
     private String priority = "MEDIUM";
+
+    // Optional: when the task is due
+    private LocalDateTime dueDate;
+
+    // Optional: when to remind the user about this task
+    private LocalDateTime reminderAt;
 
     // Many Tasks belong to one User
     @ManyToOne(fetch = FetchType.LAZY)
@@ -74,6 +81,22 @@ public class Task {
 
     public void setPriority(String priority) {
         this.priority = priority;
+    }
+
+    public LocalDateTime getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDateTime dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public LocalDateTime getReminderAt() {
+        return reminderAt;
+    }
+
+    public void setReminderAt(LocalDateTime reminderAt) {
+        this.reminderAt = reminderAt;
     }
 
     public User getUser() {

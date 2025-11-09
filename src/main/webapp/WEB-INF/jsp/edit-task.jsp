@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -82,7 +83,7 @@
             </select>
         </div>
 
-        <div class="mb-8">
+        <div class="mb-5">
             <label for="priority" class="block text-sm font-semibold text-gray-700 mb-2">Priority</label>
             <select id="priority" name="priority"
                     class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-3 focus:ring-primary-indigo/50 focus:border-primary-indigo transition duration-200 ease-in-out shadow-inner hover:border-primary-indigo/50"
@@ -91,6 +92,20 @@
                 <option value="MEDIUM" ${task.priority == 'MEDIUM' ? 'selected' : ''}>Medium</option>
                 <option value="LOW" ${task.priority == 'LOW' ? 'selected' : ''}>Low</option>
             </select>
+        </div>
+
+        <div class="mb-5">
+            <label for="dueDate" class="block text-sm font-semibold text-gray-700 mb-2">Due Date</label>
+            <input id="dueDate" name="dueDate" type="datetime-local" value="${empty task.dueDate ? '' : fn:substring(task.dueDate, 0, 16)}"
+                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-3 focus:ring-primary-indigo/50 focus:border-primary-indigo transition duration-200 ease-in-out shadow-inner hover:border-primary-indigo/50"
+                   placeholder="Select due date and time" />
+        </div>
+
+        <div class="mb-8">
+            <label for="reminderAt" class="block text-sm font-semibold text-gray-700 mb-2">Reminder</label>
+            <input id="reminderAt" name="reminderAt" type="datetime-local" value="${empty task.reminderAt ? '' : fn:substring(task.reminderAt, 0, 16)}"
+                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-3 focus:ring-primary-indigo/50 focus:border-primary-indigo transition duration-200 ease-in-out shadow-inner hover:border-primary-indigo/50"
+                   placeholder="Select reminder date and time" />
         </div>
 
         <!-- Actions -->

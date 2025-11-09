@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,6 +47,8 @@ public class TaskController {
                              @RequestParam(value = "description", required = false) String description,
                              @RequestParam(value = "status", required = false) String status,
                              @RequestParam(value = "priority", required = false) String priority,
+                             @RequestParam(value = "dueDate", required = false) String dueDate,
+                             @RequestParam(value = "reminderAt", required = false) String reminderAt,
                              HttpSession session,
                              Model model,
                              RedirectAttributes redirectAttributes) {
@@ -73,6 +77,20 @@ public class TaskController {
         task.setDescription(safeDescription);
         task.setStatus(safeStatus);
         task.setPriority(safePriority);
+
+        // Parse optional dates from HTML datetime-local (yyyy-MM-dd'T'HH:mm)
+        DateTimeFormatter fmt = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        if (dueDate != null && !dueDate.isBlank()) {
+            try {
+                task.setDueDate(LocalDateTime.parse(dueDate, fmt));
+            } catch (Exception ignored) { }
+        }
+        if (reminderAt != null && !reminderAt.isBlank()) {
+            try {
+                task.setReminderAt(LocalDateTime.parse(reminderAt, fmt));
+            } catch (Exception ignored) { }
+        }
+
         task.setUser(user);
         taskRepository.save(task);
         redirectAttributes.addFlashAttribute("taskAdded", true);
@@ -101,6 +119,8 @@ public class TaskController {
                              @RequestParam(value = "description", required = false) String description,
                              @RequestParam("status") String status,
                              @RequestParam(value = "priority", required = false) String priority,
+                             @RequestParam(value = "dueDate", required = false) String dueDate,
+                             @RequestParam(value = "reminderAt", required = false) String reminderAt,
                              HttpSession session,
                              RedirectAttributes redirectAttributes) {
         Long userId = (Long) session.getAttribute("userId");
@@ -121,6 +141,24 @@ public class TaskController {
                     safePriority = t.getPriority();
                 }
                 t.setPriority(safePriority);
+
+                // Parse and set optional dates
+                DateTimeFormatter fmt = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+                if (dueDate != null) {
+                    if (dueDate.isBlank()) {
+                        t.setDueDate(null);
+                    } else {
+                        try { t.setDueDate(LocalDateTime.parse(dueDate, fmt)); } catch (Exception ignored) {}
+                    }
+                }
+                if (reminderAt != null) {
+                    if (reminderAt.isBlank()) {
+                        t.setReminderAt(null);
+                    } else {
+                        try { t.setReminderAt(LocalDateTime.parse(reminderAt, fmt)); } catch (Exception ignored) {}
+                    }
+                }
+
                 taskRepository.save(t);
                 redirectAttributes.addFlashAttribute("taskUpdated", true);
             }

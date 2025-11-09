@@ -10,16 +10,13 @@
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Apply Inter font */
         body { font-family: 'Inter', sans-serif; }
 
-        /* Custom background gradient matching the registration page */
         .awesome-bg {
             background: #e0e7ff; /* Light indigo base */
             background-image: radial-gradient(at 10% 20%, #eff2ff 0%, #e0e7ff 100%);
         }
 
-        /* Custom stronger shadow for the card */
         .card-shadow {
             /* Deeper shadow for a more grounded 3D effect */
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -116,7 +113,6 @@
     </div>
 </div>
 
-<!-- SweetAlert triggers -->
 <c:if test="${not empty error}">
     <script>
         Swal.fire({

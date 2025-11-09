@@ -105,7 +105,7 @@
                             </select>
                         </div>
 
-                        <div class="mb-8">
+                        <div class="mb-5">
                             <label for="priority" class="block text-sm font-semibold text-gray-700 mb-2">Priority</label>
                             <select id="priority" name="priority"
                                     class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-3 focus:ring-primary-indigo/50 focus:border-primary-indigo transition duration-200 ease-in-out shadow-inner"
@@ -116,6 +116,20 @@
                             </select>
                         </div>
 
+                        <div class="mb-5">
+                            <label for="dueDate" class="block text-sm font-semibold text-gray-700 mb-2">Due Date</label>
+                            <input id="dueDate" name="dueDate" type="datetime-local"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-3 focus:ring-primary-indigo/50 focus:border-primary-indigo transition duration-200 ease-in-out shadow-inner"
+                                   placeholder="Select due date and time" />
+                        </div>
+
+                        <div class="mb-8">
+                            <label for="reminderAt" class="block text-sm font-semibold text-gray-700 mb-2">Reminder</label>
+                            <input id="reminderAt" name="reminderAt" type="datetime-local"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-3 focus:ring-primary-indigo/50 focus:border-primary-indigo transition duration-200 ease-in-out shadow-inner"
+                                   placeholder="Select reminder date and time" />
+                        </div>
+
                         <button type="submit"
                                 class="w-full py-3 px-4 bg-primary-indigo text-white font-bold rounded-xl shadow-lg shadow-indigo-500/50 hover:bg-primary-hover focus:outline-none focus:ring-4 focus:ring-primary-indigo focus:ring-opacity-70 transition duration-300 ease-in-out transform hover:scale-[1.01] active:scale-[0.98] active:shadow-md"
                         >
@@ -123,6 +137,7 @@
                         </button>
                     </form>
                 </div>
+
             </div>
 
             <!-- COLUMN 2: Your Tasks List -->
@@ -162,9 +177,19 @@
                                     </thead>
                                     <tbody id="taskTableBody" class="bg-white divide-y divide-gray-100">
                                     <c:forEach var="t" items="${tasks}">
-                                        <tr class="hover:bg-indigo-50 transition duration-150" data-status="${t.status}" data-priority="${empty t.priority ? 'MEDIUM' : t.priority}">
+                                        <tr class="hover:bg-indigo-50 transition duration-150" data-id="${t.id}" data-status="${t.status}" data-priority="${empty t.priority ? 'MEDIUM' : t.priority}" data-due="${t.dueDate}" data-reminder="${t.reminderAt}">
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${t.title}</td>
-                                            <td class="px-6 py-4 whitespace-normal text-sm text-gray-500">${t.description}</td>
+                                            <td class="px-6 py-4 whitespace-normal text-sm text-gray-700">
+                                                <div>${t.description}</div>
+                                                <div class="mt-1 space-x-2 text-xs text-gray-500">
+                                                    <c:if test="${not empty t.dueDate}">
+                                                        <span class="inline-flex items-center js-due" data-value="${t.dueDate}"><i class="far fa-calendar-alt mr-1 text-primary-indigo"></i> Due: ${t.dueDate}</span>
+                                                    </c:if>
+                                                    <c:if test="${not empty t.reminderAt}">
+                                                        <span class="inline-flex items-center js-reminder" data-value="${t.reminderAt}"><i class="far fa-bell mr-1 text-amber-500"></i> Reminder: ${t.reminderAt}</span>
+                                                    </c:if>
+                                                </div>
+                                            </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <!-- Status Badges for Task Status -->
                                                 <span
@@ -276,13 +301,54 @@
             rows.forEach(r => tbody.appendChild(r));
             hiddenRows.forEach(r => tbody.appendChild(r));
         }
-        document.querySelectorAll('th[data-sort]')?.forEach(th => {
-            th.addEventListener('click', function(){ sortBy(this.getAttribute('data-sort')); });
-        });
+        (function(){
+            var ths = document.querySelectorAll('th[data-sort]');
+            if (!ths) return;
+            ths.forEach(function(th){
+                th.addEventListener('click', function(){ sortBy(this.getAttribute('data-sort')); });
+            });
+        })();
     })();
 </script>
 <script>
     // SweetAlert2 success toasts based on flash attributes
+</script>
+<script>
+
+    // Reminder Toasts Logic
+    (function(){
+        const tbody = document.getElementById('taskTableBody');
+        if(!tbody) return;
+        const KEY_PREFIX = 'task_reminded_';
+        function parseDate(s){ if(!s) return null; // Expect ISO like 2025-10-01T20:00
+            const d = new Date(s); return isNaN(d.getTime()) ? null : d; }
+        function check(){
+            const now = new Date().getTime();
+            Array.from(tbody.rows).forEach(r => {
+                const id = r.getAttribute('data-id');
+                const title = (r.cells[0] && r.cells[0].textContent ? r.cells[0].textContent.trim() : 'Task reminder');
+                const whenStr = r.getAttribute('data-reminder');
+                const when = parseDate(whenStr);
+                if(!id || !when) return;
+                const key = KEY_PREFIX + id + '_' + whenStr;
+                if(localStorage.getItem(key)) return; // already reminded
+                if(when.getTime() <= now){
+                    localStorage.setItem(key, '1');
+                    try{
+                        Swal.fire({
+                            toast:true, position:'top-end', icon:'info',
+                            title: 'Reminder: ' + title,
+                            text: 'It\'s time to check this task.',
+                            showConfirmButton:false, timer:4000, timerProgressBar:true
+                        });
+                    }catch(e){}
+                }
+            });
+        }
+        // Check now and then every 30 seconds
+        check();
+        setInterval(check, 30000);
+    })();
 </script>
 <c:if test="${loginSuccess}">
     <script>
@@ -346,7 +412,7 @@
                 const title = form.getAttribute('data-title') || 'this task';
                 Swal.fire({
                     title: 'Delete task?',
-                    text: `Are you sure you want to delete: ${title}?`,
+                    text: 'Are you sure you want to delete: ' + title + '?',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#d33',
@@ -361,6 +427,35 @@
             });
         });
     });
+</script>
+<script>
+    // Format Due/Reminder labels to a pretty local date-time string
+    (function(){
+        function formatNice(s){
+            if(!s) return '';
+            try{
+                const d = new Date(s);
+                if(isNaN(d.getTime())){
+                    const t = s.length >= 16 ? s.substring(0,16) : s;
+                    const d2 = new Date(t);
+                    if(isNaN(d2.getTime())) return s; else return d2.toLocaleString();
+                }
+                return d.toLocaleString();
+            }catch(e){ return s; }
+        }
+        document.addEventListener('DOMContentLoaded', function(){
+            var nodes = document.querySelectorAll('.js-due, .js-reminder');
+            if(!nodes) return;
+            nodes.forEach(function(el){
+                const val = el.getAttribute('data-value');
+                const isDue = el.classList.contains('js-due');
+                const label = isDue ? 'Due: ' : 'Reminder: ';
+                var iconEl = el.querySelector('i');
+                var icon = iconEl ? iconEl.outerHTML : '';
+                el.innerHTML = icon + ' ' + label + formatNice(val);
+            });
+        });
+    })();
 </script>
 </body>
 </html>
