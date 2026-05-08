@@ -14,7 +14,7 @@
     <groupId>com.task</groupId>
     <artifactId>Task-Manager</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
 
     <name>Task-Manager</name>
     <description>Task-Manager Application</description>
@@ -45,7 +45,7 @@
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>jakarta.servlet.jsp.jstl</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.1</version>
         </dependency>
         <!-- Embedded Tomcat Jasper -->
         <dependency>

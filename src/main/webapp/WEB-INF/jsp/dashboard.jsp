@@ -116,18 +116,22 @@
                             </select>
                         </div>
 
-                        <div class="mb-5">
-                            <label for="dueDate" class="block text-sm font-semibold text-gray-700 mb-2">Due Date</label>
-                            <input id="dueDate" name="dueDate" type="datetime-local"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-3 focus:ring-primary-indigo/50 focus:border-primary-indigo transition duration-200 ease-in-out shadow-inner"
-                                   placeholder="Select due date and time" />
-                        </div>
-
-                        <div class="mb-8">
-                            <label for="reminderAt" class="block text-sm font-semibold text-gray-700 mb-2">Reminder</label>
-                            <input id="reminderAt" name="reminderAt" type="datetime-local"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-3 focus:ring-primary-indigo/50 focus:border-primary-indigo transition duration-200 ease-in-out shadow-inner"
-                                   placeholder="Select reminder date and time" />
+                        <!-- Due date + Reminder in responsive grid -->
+                        <div class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label for="dueDate" class="block text-sm font-semibold text-gray-700 mb-2">Due Date</label>
+                                <input id="dueDate" name="dueDate" type="datetime-local"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-3 focus:ring-primary-indigo/50 focus:border-primary-indigo transition duration-200 ease-in-out shadow-inner"
+                                       placeholder="Select due date and time" />
+                                <p class="mt-1 text-xs text-gray-500">When this task should be finished.</p>
+                            </div>
+                            <div>
+                                <label for="reminderAt" class="block text-sm font-semibold text-gray-700 mb-2">Reminder</label>
+                                <input id="reminderAt" name="reminderAt" type="datetime-local"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-3 focus:ring-primary-indigo/50 focus:border-primary-indigo transition duration-200 ease-in-out shadow-inner"
+                                       placeholder="Select reminder date and time" />
+                                <p class="mt-1 text-xs text-gray-500">Optional nudge before it’s due.</p>
+                            </div>
                         </div>
 
                         <button type="submit"
@@ -180,13 +184,13 @@
                                         <tr class="hover:bg-indigo-50 transition duration-150" data-id="${t.id}" data-status="${t.status}" data-priority="${empty t.priority ? 'MEDIUM' : t.priority}" data-due="${t.dueDate}" data-reminder="${t.reminderAt}">
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${t.title}</td>
                                             <td class="px-6 py-4 whitespace-normal text-sm text-gray-700">
-                                                <div>${t.description}</div>
-                                                <div class="mt-1 space-x-2 text-xs text-gray-500">
+                                                <div class="break-words text-sm text-gray-700">${t.description}</div>
+                                                <div class="mt-2 flex flex-wrap items-center gap-2 text-xs text-gray-600">
                                                     <c:if test="${not empty t.dueDate}">
-                                                        <span class="inline-flex items-center js-due" data-value="${t.dueDate}"><i class="far fa-calendar-alt mr-1 text-primary-indigo"></i> Due: ${t.dueDate}</span>
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 js-due" data-value="${t.dueDate}"><i class="far fa-calendar-alt mr-1 text-primary-indigo"></i> Due: ${t.dueDate}</span>
                                                     </c:if>
                                                     <c:if test="${not empty t.reminderAt}">
-                                                        <span class="inline-flex items-center js-reminder" data-value="${t.reminderAt}"><i class="far fa-bell mr-1 text-amber-500"></i> Reminder: ${t.reminderAt}</span>
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 js-reminder" data-value="${t.reminderAt}"><i class="far fa-bell mr-1 text-amber-500"></i> Reminder: ${t.reminderAt}</span>
                                                     </c:if>
                                                 </div>
                                             </td>
