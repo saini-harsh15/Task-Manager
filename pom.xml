@@ -14,7 +14,7 @@
     <groupId>com.task</groupId>
     <artifactId>Task-Manager</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <name>Task-Manager</name>
     <description>Task-Manager Application</description>
